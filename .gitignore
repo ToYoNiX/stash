@@ -1,0 +1,5 @@
+# build directory
+bin/
+
+# db file
+db.sqlite3
