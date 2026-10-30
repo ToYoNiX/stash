@@ -6,10 +6,14 @@ import (
 )
 
 /*
-	Two reason I made the whole Container structure with pointers
-		1. if the value is nil it would insert NULL
-		2. to make the code a tad bit faster since we don't
-			have to copy as much elements
+	So, the original reason for me to use pointers is to check
+	weither the value was provided with the invokation or not.
+
+	But... I learned the following
+	1. sql ids start by default at 1 not 0 and so as go uninitialied int.
+	2. I thought of pointers in this scenario act like cpp references, 
+	   but I was wrong and it is a bit deeper than I initially thought.
+	   So, this would be a new exploration for me. but for not it works.
 */
 
 type Container struct {
