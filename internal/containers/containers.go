@@ -28,11 +28,23 @@ func DoesExist(db *sql.DB, id int) (bool, error) {
 	query := `
 	SELECT c_id FROM containers WHERE c_id = ?;
 	`
-	// Scan returns sql.ErrNoRows if no record exists. Any other error
-	// means the query itself failed, so we hand it to the caller
-	// instead of pretending the container is missing.
 	var temp int
 	err := db.QueryRow(query, id).Scan(&temp)
+
+/*
+	this is a good thing I leanred.
+
+	now, look at the err handling and the return. 
+	I could have just sensed any error and sent it back right? NO
+
+	because here sql could error out because no rows came back.
+	and in this case this is not an error this means a record do 
+	not exist and we should return no the record does not exist
+	and no errors happend even though technically sql errored out
+	but this would move the handling over to the invoker and it 
+	should be here.
+*/
+
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}
