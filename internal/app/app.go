@@ -1,7 +1,12 @@
-// Package app holds the use cases that span more than one feature.
-// Feature packages (containers, items) never import each other;
-// anything that needs both of them lives here.
 package app
+
+/*
+	The idea behind this package is I didn't want the items
+	package to import something from containers package.
+	I am learning more about code design and patterns so I
+	wanted to experiment with this and see how far I will 
+	get using it and what I will face.
+*/
 
 import (
 	"database/sql"
@@ -12,10 +17,11 @@ import (
 	"github.com/ToYoNiX/stash/internal/items"
 )
 
-// AddItem stores an item after making sure its container exists.
-// The foreign key in the database is the real guarantee; this check
-// is here to give the caller a clear error instead of a constraint
-// failure.
+/*
+	When adding an item you need the container it will live in.
+	Since we can't import anything from container to item to 
+	check if the container exists this lives here.
+*/
 func AddItem(db *sql.DB, i *items.Item) (int, error) {
 	if i.ContainerId == nil {
 		return 0, errors.New("Parent container not provided")
