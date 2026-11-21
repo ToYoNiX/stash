@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stash{{with .Container}} - {{.Name}}{{end}}</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #999;
+        padding: 4px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      img {
+        max-width: 100px;
+        max-height: 100px;
+      }
+      fieldset {
+        margin-top: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <a href="/">Home</a>
+      {{range .Path}} / <a href="/c/{{.Id}}">{{.Name}}</a>{{end}} {{with
+      .Container}} / <b>{{.Name}}</b>{{end}}
+    </p>
+
+    {{with .Container}}
+    <h1>{{.Name}}</h1>
+    {{with .ImgPath}}
+    <p>
+      <a href="/uploads/{{.}}"><img src="/uploads/{{.}}" /></a>
+    </p>
+    {{end}}
+    <p>{{.Description}}</p>
+    {{else}}
+    <h1>Stash</h1>
+    {{end}}
+
+    <h2>Containers</h2>
+    {{if .Containers}}
+    <table>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+      {{range .Containers}}
+      <tr>
+        <td>{{with .ImgPath}}<img src="/uploads/{{.}}" />{{end}}</td>
+        <td><a href="/c/{{.Id}}">{{.Name}}</a></td>
+        <td>{{.Description}}</td>
+        <td>
+          <form
+            method="post"
+            action="/containers/{{.Id}}/delete"
+            onsubmit="return confirm('Delete this container?');"
+          >
+            <button>Delete</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </table>
+    {{else}}
+    <p>No containers.</p>
+    {{end}} {{if .Container}}
+    <h2>Items</h2>
+    {{if .Items}}
+    <table>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th></th>
+      </tr>
+      {{range .Items}}
+      <tr>
+        <td>
+          {{with .ImgPath}}<a href="/uploads/{{.}}"
+            ><img src="/uploads/{{.}}" /></a
+          >{{end}}
+        </td>
+        <td>{{.Name}}</td>
+        <td>{{.Description}}</td>
+        <td>{{.Amount}}</td>
+        <td>
+          <form
+            method="post"
+            action="/items/{{.Id}}/delete"
+            onsubmit="return confirm('Delete this item?');"
+          >
+            <button>Delete</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </table>
+    {{else}}
+    <p>No items.</p>
+    {{end}} {{end}}
+
+    <fieldset>
+      <legend>Add container</legend>
+      <form method="post" action="/containers" enctype="multipart/form-data">
+        {{with .Container}}<input
+          type="hidden"
+          name="parent"
+          value="{{.Id}}"
+        />{{end}}
+        <p>
+          <label>Name<br /><input name="name" required /></label>
+        </p>
+        <p>
+          <label
+            >Description<br /><textarea name="description"></textarea>
+          </label>
+        </p>
+        <p>
+          <label
+            >Photo<br /><input
+              type="file"
+              name="image"
+              accept="image/*"
+              capture="environment"
+          /></label>
+        </p>
+        <p><button>Add container</button></p>
+      </form>
+    </fieldset>
+
+    {{with .Container}}
+    <fieldset>
+      <legend>Add item</legend>
+      <form method="post" action="/items" enctype="multipart/form-data">
+        <input type="hidden" name="container" value="{{.Id}}" />
+        <p>
+          <label>Name<br /><input name="name" required /></label>
+        </p>
+        <p>
+          <label
+            >Description<br /><textarea name="description"></textarea>
+          </label>
+        </p>
+        <p>
+          <label
+            >Amount<br /><input
+              type="number"
+              name="amount"
+              min="0"
+              value="1"
+              required
+          /></label>
+        </p>
+        <p>
+          <label
+            >Photo<br /><input
+              type="file"
+              name="image"
+              accept="image/*"
+              capture="environment"
+          /></label>
+        </p>
+        <p><button>Add item</button></p>
+      </form>
+    </fieldset>
+    {{end}}
+  </body>
+</html>

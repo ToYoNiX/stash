@@ -75,3 +75,46 @@ func Remove(db *sql.DB, i *Item) error {
 
 	return nil
 }
+
+func ListByContainer(db *sql.DB, containerId int) ([]Item, error) {
+	query := `
+	SELECT item_id, c_id, name, description, amount, img_path
+	FROM items
+	WHERE c_id = ?
+	ORDER BY name;
+	`
+
+	rows, err := db.Query(query, containerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []Item
+	for rows.Next() {
+		var i Item
+		err := rows.Scan(&i.Id, &i.ContainerId, &i.Name, &i.Description, &i.Amount, &i.ImgPath)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, i)
+	}
+
+	return list, rows.Err()
+}
+
+func Get(db *sql.DB, id int) (*Item, error) {
+	query := `
+	SELECT item_id, c_id, name, description, amount, img_path
+	FROM items
+	WHERE item_id = ?;
+	`
+
+	var i Item
+	err := db.QueryRow(query, id).Scan(&i.Id, &i.ContainerId, &i.Name, &i.Description, &i.Amount, &i.ImgPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return &i, nil
+}
